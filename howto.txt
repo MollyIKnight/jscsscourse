@@ -1,0 +1,5 @@
+how to sync the course work
+browser-sync start --server --directory --files "*"
+
+How to add your custom python programme as a cmdline exe:
+https://dbader.org/blog/how-to-make-command-line-commands-with-python
