@@ -8,8 +8,54 @@ fout.write('''<!doctype html>
   <head>
     <title>Your Mastodon Archive</title>
     <meta charset='utf-8'>
+    <style>
+     body {
+         background-color:AliceBlue;
+         font-family: arial, Helvetica, sans-serif;
+        }
+     .publicstatus{
+         background-color:Bisque;
+         border: 2px solid black;
+         text-align:left;
+         margin: auto;
+         padding:20px;
+         width: 80%;
+
+        }
+        .privatestatus{
+         background-color:Seashell;
+         border: 2px solid black;
+         text-align:left;
+         margin:auto;
+         padding:20px;
+         width: 80%;
+
+        }
+        .retoot{
+         background-color:Lavender;
+         color:DarkSlateGray;
+         border: 2px solid black;
+         text-align:left;
+         margin:auto;
+         padding:20px;
+         width: 80%;
+
+        }
+        .attachment_declare{
+        text-align:center;
+        }
+        .retoot_declare{
+        text-align:center;
+        }
+        .summary_content{
+        text-align:center;}
+        
+        .original_link{
+        text-align:center;
+        }
+    </style>
   </head>
-  <body style="background-color:AliceBlue;text-align:left">''')
+  <body>\n''')
 bodynest = 1
 
 import json
@@ -30,6 +76,10 @@ oball = json.loads(poststr) #all contents of outbox
 #'orderedItems' attr is the actual post structure; extract posts as list
 posts = oball['orderedItems'] 
 #print(len(posts))
+def writecontent(str,fout):
+    lines=re.findall('<p>(.*?)</p>',str)
+    for i in lines:
+       fout.write(i+'<br>')
 
 #structure of posts: 1st layer: 'published'-publish time; 'to': in reply to; 'object': the main text, Chinese encoding in gbk.
 #2nd main layer: object. attributes are:
@@ -46,26 +96,26 @@ def write_post():
        if re.search('#Public',cc):
            public = True
            break
-    if public:
-        fout.write('<p style="background-color:Bisque">')
-    else:
-        fout.write('<p style="background-color:SeaShell">')
     if thisone['object']['summary']:
-        fout.write('<div>Summary: '+thisone['object']['summary']+'</div>')
+        fout.write('<div class="summary_content">Summary: '+thisone['object']['summary']+'</div> \n')
+    if public:
+        fout.write('<p class="publicstatus"> \n') #style="background-color:Bisque">')
+    else:
+        fout.write('<p class="privatestatus"> \n')# style="background-color:SeaShell">')
+    writecontent((thisone['object']['content']),fout)
     if thisone['object']['attachment']:
-        fout.write('<div">This toot has attachment. Click on time tag to view in original link</div>')
-    fout.write(re.findall('<p>(.*)</p>',thisone['object']['content'])[0])
-    fout.write('<div><a href='+thisone['object']['id']+' target="_blank">')
+        fout.write('<div class="attachment_declare">This toot has attachment. Click on time tag to view in original link</div> \n')
+    fout.write('<div class="original_link"><a href='+thisone['object']['id']+' target="_blank">')
     fout.write(thisone['published'])
-    fout.write('</a></div></p>')
+    fout.write('</a></div>\n</p>\n')
 
 def write_retoot():
-    fout.write('<p style="background-color:Lavender;color:DarkSlateGray">')
-    fout.write('<div">This is a retoot: original link on time tag </div>')
+    fout.write('<p class="retoot">\n')
     fout.write(thisone['object'])
-    fout.write('<br><a href='+thisone['object']+' target="_blank">')
+    fout.write('<div class="retoot_declare">This is a retoot: original link on time tag </div> \n')
+    fout.write('<div class="original_link"> <a href='+thisone['object']+' target="_blank">')
     fout.write(thisone['published'])
-    fout.write('</a></p>')
+    fout.write('</a></div>\n</p>\n')
     
 for item in range(len(posts)):
     
@@ -75,8 +125,8 @@ for item in range(len(posts)):
         write_retoot()
     if thisone['type'] == 'Create':
         write_post()
-    fout.write('<hr>')
+    
  
 
-fout.write('</body>')
+fout.write('</body>\n')
 fout.close()
