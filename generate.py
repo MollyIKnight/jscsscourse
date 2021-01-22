@@ -41,6 +41,17 @@ fout.write('''<!doctype html>
          width: 80%;
 
         }
+
+         .retoot_self{
+         background-color:LightCyan;
+         color:DarkSlateGray;
+         border: 2px solid black;
+         text-align:left;
+         margin:auto;
+         padding:20px;
+         width: 80%;
+
+        }
         .attachment_declare{
         text-align:center;
         }
@@ -61,6 +72,7 @@ bodynest = 1
 import json
 #import codecs
 import re
+import types
 
 outbox = open("outbox.json",encoding='utf-8')
 poststr = outbox.read()
@@ -110,12 +122,25 @@ def write_post():
     fout.write('</a></div>\n</p>\n')
 
 def write_retoot():
-    fout.write('<p class="retoot">\n')
-    fout.write(thisone['object'])
-    fout.write('<div class="retoot_declare">This is a retoot: original link on time tag </div> \n')
-    fout.write('<div class="original_link"> <a href='+thisone['object']+' target="_blank">')
-    fout.write(thisone['published'])
-    fout.write('</a></div>\n</p>\n')
+    if isinstance(thisone['object'],dict):
+        fout.write('<p class="retoot_self">\n')
+        print(thisone['object']['url']+'\n')
+        print(type(thisone['object']))
+        fout.write(thisone['object']['url'])
+        fout.write('<div class="retoot_declare">This is a retoot of your own previous toot: original link on time tag </div> \n')
+        fout.write('<div class="original_link"> <a href='+thisone['object']['url']+' target="_blank">')
+        fout.write(thisone['published'])
+        fout.write('</a></div>\n</p>\n')
+    else:
+        fout.write('<p class="retoot">\n')
+        print(thisone['published']+'\n')
+        print(thisone['object']+'\n')
+        print(type(thisone['object']))
+        fout.write(thisone['object'])
+        fout.write('<div class="retoot_declare">This is a retoot: original link on time tag </div> \n')
+        fout.write('<div class="original_link"> <a href='+thisone['object']+' target="_blank">')
+        fout.write(thisone['published'])
+        fout.write('</a></div>\n</p>\n')
     
 for item in range(len(posts)):
     
