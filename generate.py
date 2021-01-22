@@ -124,8 +124,6 @@ def write_post():
 def write_retoot():
     if isinstance(thisone['object'],dict):
         fout.write('<p class="retoot_self">\n')
-        print(thisone['object']['url']+'\n')
-        print(type(thisone['object']))
         fout.write(thisone['object']['url'])
         fout.write('<div class="retoot_declare">This is a retoot of your own previous toot: original link on time tag </div> \n')
         fout.write('<div class="original_link"> <a href='+thisone['object']['url']+' target="_blank">')
@@ -133,9 +131,6 @@ def write_retoot():
         fout.write('</a></div>\n</p>\n')
     else:
         fout.write('<p class="retoot">\n')
-        print(thisone['published']+'\n')
-        print(thisone['object']+'\n')
-        print(type(thisone['object']))
         fout.write(thisone['object'])
         fout.write('<div class="retoot_declare">This is a retoot: original link on time tag </div> \n')
         fout.write('<div class="original_link"> <a href='+thisone['object']+' target="_blank">')
