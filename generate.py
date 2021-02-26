@@ -59,7 +59,8 @@ fout.write('''<!doctype html>
         text-align:center;
         }
         .summary_content{
-        text-align:center;}
+        text-align:center;
+        font: bold 30px}
         
         .original_link{
         text-align:center;
@@ -73,6 +74,7 @@ import json
 #import codecs
 import re
 import types
+import datetime as dt
 
 outbox = open("outbox.json",encoding='utf-8')
 poststr = outbox.read()
@@ -93,6 +95,12 @@ def writecontent(str,fout):
     for i in lines:
        fout.write(i+'<br>')
 
+def date_time_format(tsstr):
+    #2020-05-19T11:50:58Z
+    ts = dt.datetime.strptime(tsstr, '%Y-%m-%dT%H:%M:%SZ')
+    tsfs = ts.strftime('%H:%M:%S, on %a, %d %B %Y') #timstamp format string
+    return 'Published at ' + tsfs
+
 #structure of posts: 1st layer: 'published'-publish time; 'to': in reply to; 'object': the main text, Chinese encoding in gbk.
 #2nd main layer: object. attributes are:
 #id: unique identifier link
@@ -109,7 +117,7 @@ def write_post():
            public = True
            break
     if thisone['object']['summary']:
-        fout.write('<div class="summary_content">Summary: '+thisone['object']['summary']+'</div> \n')
+        fout.write('<p class="summary_content">Summary: '+thisone['object']['summary']+'</p> \n')
     if public:
         fout.write('<p class="publicstatus"> \n') #style="background-color:Bisque">')
     else:
@@ -118,7 +126,7 @@ def write_post():
     if thisone['object']['attachment']:
         fout.write('<div class="attachment_declare">This toot has attachment. Click on time tag to view in original link</div> \n')
     fout.write('<div class="original_link"><a href='+thisone['object']['id']+' target="_blank">')
-    fout.write(thisone['published'])
+    fout.write(date_time_format(thisone['published']))
     fout.write('</a></div>\n</p>\n')
 
 def write_retoot():
@@ -127,14 +135,14 @@ def write_retoot():
         fout.write(thisone['object']['url'])
         fout.write('<div class="retoot_declare">This is a retoot of your own previous toot: original link on time tag </div> \n')
         fout.write('<div class="original_link"> <a href='+thisone['object']['url']+' target="_blank">')
-        fout.write(thisone['published'])
+        fout.write(date_time_format(thisone['published']))
         fout.write('</a></div>\n</p>\n')
     else:
         fout.write('<p class="retoot">\n')
         fout.write(thisone['object'])
         fout.write('<div class="retoot_declare">This is a retoot: original link on time tag </div> \n')
         fout.write('<div class="original_link"> <a href='+thisone['object']+' target="_blank">')
-        fout.write(thisone['published'])
+        fout.write(date_time_format(thisone['published']))
         fout.write('</a></div>\n</p>\n')
     
 for item in range(len(posts)):
